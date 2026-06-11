@@ -34,7 +34,7 @@ def normalize_genre(genre: str) -> str:
 def normalize_song(raw: Song) -> Song:
     """Return a normalized song dict with expected keys."""
     title = normalize_title(str(raw.get("title", "")))
-    artist = normalize_artist(str(raw.get("artist", "")))
+    artist = str(raw.get("artist", "")).strip()
     genre = normalize_genre(str(raw.get("genre", "")))
     energy = raw.get("energy", 0)
 
@@ -142,16 +142,17 @@ def most_common_artist(songs: List[Song]) -> Tuple[str, int]:
     """Return the most common artist and count."""
     counts: Dict[str, int] = {}
     for song in songs:
-        artist = normalize_artist(str(song.get("artist", "")))
-        if not artist:
+        key = normalize_artist(str(song.get("artist", "")))
+        if not key:
             continue
-        counts[artist] = counts.get(artist, 0) + 1
+        counts[key] = counts.get(key, 0) + 1
 
     if not counts:
         return "", 0
 
     items = sorted(counts.items(), key=lambda item: item[1], reverse=True)
-    return items[0]
+    top_key, top_count = items[0]
+    return top_key.title(), top_count
 
 
 def search_songs(
